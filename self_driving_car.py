@@ -62,13 +62,13 @@ class Dataset(data.Dataset):
     def __len__(self):
         return len(self.samples)
 
+# Step3b: Creating generator using the dataloader to parallasize the process
 transformations = transforms.Compose([transforms.Lambda(lambda x: (x / 255.0) - 0.5)])
 
 params = {'batch_size': 32,
           'shuffle': True,
           'num_workers': 4}
 
-# Step3b: Creating generator using the dataloader to parallasize the process
 training_set = Dataset(train_samples, transformations)
 training_generator = data.DataLoader(training_set, **params)
 
@@ -104,7 +104,6 @@ class NetworkDense(nn.Module):
     def forward(self, input):  
         input = input.view(input.size(0), 3, 70, 320)
         output = self.conv_layers(input)
-        print(output.shape)
         output = output.view(output.size(0), -1)
         output = self.linear_layers(output)
         return output
@@ -132,7 +131,6 @@ class NetworkLight(nn.Module):
     def forward(self, input):
         input = input.view(input.size(0), 3, 70, 320)
         output = self.conv_layers(input)
-        print(output.shape)
         output = output.view(output.size(0), -1)
         output = self.linear_layers(output)
         return output
@@ -181,7 +179,7 @@ for epoch in range(max_epochs):
             
         if local_batch % 100 == 0:
             print('Loss: %.3f '
-#                 % (train_loss/((local_batch+1)*3)))
+                 % (train_loss/(local_batch+1)))
 
     
     # Validation
@@ -203,10 +201,9 @@ for epoch in range(max_epochs):
                 
                 train_loss += loss.data[0].item()
 
-            avg_valid_loss = valid_loss/(local_batch+1)
             if local_batch % 100 == 0:
                 print('Valid Loss: %.3f '
-#                     % (valid_loss/(local_batch+1)))
+                     % (valid_loss/(local_batch+1)))
 
 # Step8: Define state and save the model wrt to state
 state = {
