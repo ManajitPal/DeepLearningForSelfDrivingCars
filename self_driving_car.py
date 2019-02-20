@@ -199,7 +199,7 @@ for epoch in range(max_epochs):
                 outputs = model(imgs)
                 loss = criterion(outputs, angles.unsqueeze(1))
                 
-                train_loss += loss.data[0].item()
+                valid_loss += loss.data[0].item()
 
             if local_batch % 100 == 0:
                 print('Valid Loss: %.3f '
